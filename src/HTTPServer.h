@@ -8,6 +8,9 @@ using namespace asio::ip;
 
 class HTTPServer {
 public:
+    HTTPServer(const HTTPServer&) = delete;
+    HTTPServer& operator=(const HTTPServer&) = delete;
+
     HTTPServer();
     virtual ~HTTPServer();
 
@@ -17,10 +20,12 @@ public:
     void run();
     void stop();
 
+    void accept();
+
 private:
     io_service service;
-
     tcp::acceptor acceptor;
+    tcp::socket socket;
 };
 
 #endif //HATH_HTTPSERVER_H

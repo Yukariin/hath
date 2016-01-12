@@ -1,6 +1,7 @@
+#include <iostream>
 #include "HTTPServer.h"
 
-HTTPServer::HTTPServer() : acceptor(service)
+HTTPServer::HTTPServer() : service(), acceptor(service), socket(service)
 {
 
 }
@@ -18,12 +19,16 @@ asio::error_code HTTPServer::listen(const tcp::endpoint &endpoint)
     acceptor.open(endpoint.protocol(), error);
     if (error) return error;
 
+    acceptor.set_option(tcp::acceptor::reuse_address(true), error);
+    if (error) return error;
+
     acceptor.bind(endpoint, error);
     if (error) return error;
 
     acceptor.listen(socket_base::max_connections, error);
     if (error) return error;
 
+    this->accept();
     return error;
 }
 
@@ -45,4 +50,17 @@ void HTTPServer::run()
 void HTTPServer::stop()
 {
     service.stop();
+}
+
+void HTTPServer::accept()
+{
+    acceptor.async_accept(socket, [=](const asio::error_code &error)
+    {
+        if (!error)
+        {
+            std::cout << socket.remote_endpoint() << std::endl;
+        }
+
+        this->accept();
+    });
 }
