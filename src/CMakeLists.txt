@@ -6,7 +6,9 @@ set(http_parser_SRCS "${PROJECT_SOURCE_DIR}/lib/http-parser/http_parser.c")
 include_directories("${PROJECT_SOURCE_DIR}/lib/asio/asio/include")
 add_definitions("-DASIO_STANDALONE")
 
+find_package(Threads REQUIRED)
+
 file(GLOB_RECURSE hath_SRCS *.cpp *.h)
 
 add_executable(hath ${hath_SRCS} ${http_parser_SRCS})
-target_link_libraries(hath)
+target_link_libraries(hath ${CMAKE_THREAD_LIBS_INIT})
