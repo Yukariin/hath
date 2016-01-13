@@ -9,6 +9,7 @@ HTTPServer::HTTPServer() : service(), acceptor(service), socket(service), manage
 HTTPServer::~HTTPServer()
 {
     acceptor.close();
+    manager.stopAll();
     service.stop();
 }
 
