@@ -7,7 +7,8 @@
 
 #include "util.h"
 
-class HTTPRequest {
+class HTTPRequest
+{
 public:
     typedef std::map<std::string, std::string, ci_less> header_map;
 
