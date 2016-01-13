@@ -1,7 +1,7 @@
 #include <iostream>
 #include "HTTPServer.h"
 
-HTTPServer::HTTPServer() : service(), acceptor(service), socket(service)
+HTTPServer::HTTPServer() : service(), acceptor(service), socket(service), manager()
 {
 
 }
@@ -56,9 +56,12 @@ void HTTPServer::accept()
 {
     acceptor.async_accept(socket, [=](const asio::error_code &error)
     {
+        if (!acceptor.is_open())
+            return;
+
         if (!error)
         {
-            std::cout << socket.remote_endpoint() << std::endl;
+            manager.start(std::make_shared<HTTPConnection>(std::move(socket), manager));
         }
 
         this->accept();

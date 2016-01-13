@@ -1,12 +1,19 @@
 #ifndef HATH_HTTPSERVER_H
 #define HATH_HTTPSERVER_H
 
+#include <memory>
+
 #include "asio.hpp"
+#include "HTTPConnection.h"
+#include "HTTPConnectionManager.h"
+
+#define BufferSize 1024
 
 using namespace asio;
 using namespace asio::ip;
 
-class HTTPServer {
+class HTTPServer
+{
 public:
     HTTPServer(const HTTPServer&) = delete;
     HTTPServer& operator=(const HTTPServer&) = delete;
@@ -20,12 +27,14 @@ public:
     void run();
     void stop();
 
+protected:
     void accept();
 
 private:
     io_service service;
     tcp::acceptor acceptor;
     tcp::socket socket;
+    HTTPConnectionManager manager;
 };
 
 #endif //HATH_HTTPSERVER_H
