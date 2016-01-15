@@ -1,3 +1,4 @@
+#include <iostream>
 #include "util.h"
 
 void sha1_compress(uint32_t state[5], const uint8_t block[64])
@@ -163,4 +164,12 @@ std::string get_sha1_string(std::string s)
         os << std::setw(2) << hash[i];
 
     return os.str();
+}
+
+std::string http_time(std::time_t now)
+{
+    char buf[1000];
+    std::tm tm = *std::gmtime(&now);
+    strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    return std::string(buf);
 }
