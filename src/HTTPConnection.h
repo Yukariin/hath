@@ -5,8 +5,7 @@
 #include <memory>
 
 #include "asio.hpp"
-
-#define BufferSize 1024
+#include "HTTPParser.h"
 
 using namespace asio::ip;
 
@@ -19,14 +18,15 @@ public:
     HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager);
 
     void read();
-    void write();
+    void write(std::vector<char> data);
     void start();
     void stop();
 
 private:
     tcp::socket socket;
     HTTPConnectionManager &manager;
-    std::array<char, BufferSize> buffer;
+    std::array<char, 8192> buffer;
+    HTTPParser parser;
 };
 
 typedef std::shared_ptr<HTTPConnection> connectionPtr;
