@@ -13,7 +13,13 @@ public:
     HTTPParser();
     ~HTTPParser();
 
-    void parse(const char *data, std::size_t length);
+    enum Status {
+        Error = -1,
+        KeepGoing = 0,
+        GotRequest = 1
+    };
+
+    Status parse(const char *data, std::size_t length);
     std::shared_ptr<HTTPRequest> getRequest();
 
 private:
