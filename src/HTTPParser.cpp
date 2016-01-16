@@ -2,14 +2,13 @@
 
 HTTPParser::HTTPParser()
 {
-    parser = new http_parser;
-    http_parser_init(parser, HTTP_REQUEST);
-    parser->data = this;
+    http_parser_init(&parser, HTTP_REQUEST);
+    parser.data = this;
 }
 
 HTTPParser::~HTTPParser()
 {
-    delete parser;
+
 }
 
 HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
@@ -94,7 +93,7 @@ HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
         req = nullptr;
     }
 
-    std::size_t parsed = http_parser_execute(parser, &parser_settings, data, length);
+    std::size_t parsed = http_parser_execute(&parser, &parser_settings, data, length);
 
     if (parsed != length)
         return Error;

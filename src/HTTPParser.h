@@ -23,7 +23,7 @@ public:
     std::shared_ptr<HTTPRequest> getRequest();
 
 private:
-    http_parser *parser;
+    http_parser parser;
     http_parser_settings parser_settings;
 
     std::shared_ptr<HTTPRequest> req;
