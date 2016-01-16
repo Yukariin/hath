@@ -89,5 +89,9 @@ void HTTPParser::parse(const char *data, std::size_t length)
     };
 
     std::size_t parsed = http_parser_execute(parser, &parser_settings, data, length);
-    std::cout << "Parsed: " << parsed << std::endl;
+}
+
+std::shared_ptr<HTTPRequest> HTTPParser::getRequest()
+{
+    return req;
 }

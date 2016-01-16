@@ -14,6 +14,7 @@ public:
     ~HTTPParser();
 
     void parse(const char *data, std::size_t length);
+    std::shared_ptr<HTTPRequest> getRequest();
 
 private:
     http_parser *parser;
