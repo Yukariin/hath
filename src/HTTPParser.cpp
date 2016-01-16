@@ -84,7 +84,7 @@ HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
     {
         auto c = reinterpret_cast<HTTPParser*>(parser->data);
         c->req->method = http_method_str(static_cast<http_method>(parser->method));
-        done = true;
+        c->done = true;
         return 0;
     };
 
