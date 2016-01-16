@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "HTTPConnectionManager.h"
 #include "HTTPResponse.h"
 #include "HTTPHandler.h"
@@ -16,8 +14,6 @@ void HTTPConnection::read()
     socket.async_read_some(asio::buffer(buffer),
     [this, self](const asio::error_code &error, std::size_t bytesTransferred)
     {
-        std::cout << "Bytes readed: " << bytesTransferred << std::endl;
-
         if (!error)
         {
             HTTPParser::Status s = parser.parse(buffer.data(), bytesTransferred);
@@ -52,10 +48,7 @@ void HTTPConnection::write(std::vector<char> data)
     asio::async_write(socket, asio::buffer(data),
     [this, self](const asio::error_code& error, std::size_t bytesTransferred)
     {
-        std::cout << "Bytes sended: " << bytesTransferred << std::endl;
-
-        if (error != asio::error::operation_aborted)
-            manager.stop(shared_from_this());
+        manager.stop(shared_from_this());
     });
 }
 
