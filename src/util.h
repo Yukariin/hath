@@ -8,6 +8,7 @@
     #include <string.h>
 #endif
 
+#include <iostream>
 #include <string>
 #include <sstream>
 #include <stdint.h>
@@ -48,22 +49,34 @@ inline std::string http_time(std::time_t now = std::time(nullptr))
  *
  * Based on an answer to http://stackoverflow.com/questions/236129
  */
-inline std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems)
+inline std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems, int count = -1)
 {
     std::stringstream ss(s);
     std::string item;
-    while(std::getline(ss, item, delim))
-        if(!item.empty()) elems.push_back(item);
+    while (std::getline(ss, item, delim) && count < 0 ? 1 : count-- > 0)
+        elems.push_back(item);
 
     return elems;
 }
-
 /// @overload
-inline std::vector<std::string> split(const std::string &s, char delim)
+inline std::vector<std::string> split(const std::string &s, char delim, int count = -1)
 {
     std::vector<std::string> elems;
-    split(s, delim, elems);
+    split(s, delim, elems, count);
     return elems;
+}
+
+// http://stackoverflow.com/questions/3418231
+inline std::string replace(std::string str, const std::string& from, const std::string& to, int count = -1)
+{
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos && count < 0 ? 1 : count-- > 0)
+    {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+
+    return str;
 }
 
 #endif //HATH_UTIL_H
