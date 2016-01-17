@@ -9,11 +9,6 @@ HTTPConnection::HTTPConnection(tcp::socket socket, HTTPConnectionManager &manage
 
 }
 
-HTTPConnection::~HTTPConnection()
-{
-
-}
-
 void HTTPConnection::read()
 {
     auto self(shared_from_this());

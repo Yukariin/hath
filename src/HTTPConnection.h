@@ -17,7 +17,6 @@ class HTTPConnection
 {
 public:
     HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager, HTTPHandler &handler);
-    ~HTTPConnection();
 
     void read();
     void write(std::vector<char> data);
@@ -26,10 +25,10 @@ public:
 
 private:
     tcp::socket socket;
-    HTTPConnectionManager &manager;
     std::array<char, 8192> buffer;
+    HTTPConnectionManager& manager;
+    HTTPHandler& handler;
     HTTPParser parser;
-    HTTPHandler handler;
 };
 
 typedef std::shared_ptr<HTTPConnection> connectionPtr;
