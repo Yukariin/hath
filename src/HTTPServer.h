@@ -7,6 +7,7 @@
 #include "asio.hpp"
 #include "HTTPConnection.h"
 #include "HTTPConnectionManager.h"
+#include "HTTPHandler.h"
 
 #define BufferSize 1024
 
@@ -25,7 +26,7 @@ public:
     asio::error_code listen(const tcp::endpoint &endpoint);
     asio::error_code listen(const std::string &address, const uint16_t &port);
     asio::error_code listen(const uint16_t &port);
-    std::thread && run();
+    void run();
     void stop();
 
 protected:
@@ -38,6 +39,7 @@ private:
     tcp::acceptor acceptor;
     tcp::socket socket;
     HTTPConnectionManager manager;
+    HTTPHandler request_handler;
 };
 
 #endif //HATH_HTTPSERVER_H

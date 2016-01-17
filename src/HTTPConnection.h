@@ -6,6 +6,7 @@
 
 #include "asio.hpp"
 #include "HTTPParser.h"
+#include "HTTPHandler.h"
 
 using namespace asio::ip;
 
@@ -15,7 +16,8 @@ class HTTPConnection
     : public std::enable_shared_from_this<HTTPConnection>
 {
 public:
-    HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager);
+    HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager, HTTPHandler &handler);
+    ~HTTPConnection();
 
     void read();
     void write(std::vector<char> data);
@@ -27,6 +29,7 @@ private:
     HTTPConnectionManager &manager;
     std::array<char, 8192> buffer;
     HTTPParser parser;
+    HTTPHandler handler;
 };
 
 typedef std::shared_ptr<HTTPConnection> connectionPtr;

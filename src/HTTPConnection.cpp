@@ -1,9 +1,15 @@
+#include <iostream>
 #include "HTTPConnectionManager.h"
 #include "HTTPResponse.h"
 #include "HTTPHandler.h"
 
-HTTPConnection::HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager)
-        : socket(std::move(socket)), manager(manager)
+HTTPConnection::HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager, HTTPHandler &handler)
+        : socket(std::move(socket)), manager(manager), handler(handler)
+{
+
+}
+
+HTTPConnection::~HTTPConnection()
 {
 
 }
@@ -22,8 +28,7 @@ void HTTPConnection::read()
 
             if (s == HTTPParser::GotRequest)
             {
-                HTTPHandler h;
-                h.handleRequest(req, res);
+                handler.handleRequest(req, res);
                 write(res->toHTTP());
             }
             else if (s == HTTPParser::Error)

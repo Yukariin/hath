@@ -2,7 +2,8 @@
 #include <thread>
 #include "HTTPServer.h"
 
-HTTPServer::HTTPServer(unsigned int workers) : service(), work(service), acceptor(service), socket(service), manager()
+HTTPServer::HTTPServer(unsigned int workers)
+        : service(), work(service), acceptor(service), socket(service), manager(), request_handler()
 {
     for(unsigned int i = 0; i < workers; i++)
         worker_threads.emplace_back([&]{ service.run(); });
@@ -47,7 +48,7 @@ asio::error_code HTTPServer::listen(const uint16_t &port)
     return this->listen(tcp::endpoint(tcp::v4(), port));
 }
 
-std::thread && HTTPServer::run()
+void HTTPServer::run()
 {
     service.run();
 }
@@ -66,7 +67,7 @@ void HTTPServer::accept()
 
         if (!error)
         {
-            manager.start(std::make_shared<HTTPConnection>(std::move(socket), manager));
+            manager.start(std::make_shared<HTTPConnection>(std::move(socket), manager, request_handler));
         }
 
         this->accept();
