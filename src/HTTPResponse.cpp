@@ -127,7 +127,11 @@ std::shared_ptr<HTTPResponse> HTTPResponse::write(const std::string &data)
 
 void HTTPResponse::end()
 {
-    this->header("Content-Length", std::to_string(body.size()));
+    if (body.size())
+    {
+        this->header("Cache-Control", "public, max-age=31536000");
+        this->header("Content-Length", std::to_string(body.size()));
+    }
 }
 
 std::vector<char> HTTPResponse::toHTTP()
