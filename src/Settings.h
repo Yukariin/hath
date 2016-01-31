@@ -26,6 +26,8 @@ public:
     static bool parseArgs(std::vector<std::string> args);
     static bool updateSetting(std::string setting, std::string value);
 
+    static int getClientID();
+    static std::string getClientKey();
     static int getClientPort();
 
 private:

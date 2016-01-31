@@ -27,7 +27,7 @@ bool Settings::loginCredentialsAreSyntaxValid()
 
 bool Settings::loadClientLoginFromFile()
 {
-    std::ifstream clientLogin("file.txt");
+    std::ifstream clientLogin(DATA_FILENAME_CLIENT_LOGIN);
 
     if (clientLogin.bad())
         return false;
@@ -74,6 +74,8 @@ void Settings::promptForIDAndKey()
             std::cout << "Invalid Client Key, it must be exactly 20 alphanumerical characters. Please try again." << std::endl;
     }
     while (!loginCredentialsAreSyntaxValid());
+
+    putStringFileContents(DATA_FILENAME_CLIENT_LOGIN, (std::to_string(clientID) + "-" + clientKey));
 }
 
 // note that these settings will currently be overwritten by any equal ones read from the server, so it should not be used to override server-side settings.
@@ -151,6 +153,16 @@ bool Settings::updateSetting(std::string setting, std::string value)
     }
 
     return false;
+}
+
+int Settings::getClientID()
+{
+    return clientID;
+}
+
+std::string Settings::getClientKey()
+{
+    return clientKey;
 }
 
 int Settings::getClientPort()
