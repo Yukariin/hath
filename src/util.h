@@ -15,6 +15,10 @@
 #include <iomanip>
 #include <time.h>
 #include <vector>
+#include <random>
+#include <functional>
+#include <fstream>
+#include <algorithm>
 
 // Case-insensitive comparator.
 struct ci_less : std::binary_function<std::string, std::string, bool>
@@ -77,6 +81,21 @@ inline std::string replace(std::string str, const std::string& from, const std::
     }
 
     return str;
+}
+
+inline void putStringFileContents(std::string file, std::string content)
+{
+    std::ofstream out(file);
+    out << content;
+    out.close();
+}
+
+inline std::vector<char> get_rand_bytes(int size)
+{
+    std::vector<char> ret(size);
+    std::fill(ret.begin(), ret.end(), (97 + rand() % 26));
+
+    return ret;
 }
 
 #endif //HATH_UTIL_H
