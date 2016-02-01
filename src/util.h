@@ -20,6 +20,10 @@
 #include <fstream>
 #include <algorithm>
 
+#include <boost/filesystem.hpp>
+
+using namespace boost::filesystem;
+
 // Case-insensitive comparator.
 struct ci_less : std::binary_function<std::string, std::string, bool>
 {
@@ -81,6 +85,18 @@ inline std::string replace(std::string str, const std::string& from, const std::
     }
 
     return str;
+}
+
+inline std::string checkAndCreateDir(std::string dir)
+{
+    path p(dir);
+    if (is_regular_file(p))
+        remove(p);
+
+    if (!is_directory(p))
+        create_directories(p);
+
+    return dir;
 }
 
 inline void putStringFileContents(std::string file, std::string content)

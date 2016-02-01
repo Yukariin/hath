@@ -4,3 +4,9 @@
 [submodule "lib/http-parser"]
 	path = lib/http-parser
 	url = https://github.com/nodejs/http-parser.git
+[submodule "lib/system"]
+	path = lib/system
+	url = https://github.com/boostorg/system.git
+[submodule "lib/filesystem"]
+	path = lib/filesystem
+	url = https://github.com/boostorg/filesystem.git

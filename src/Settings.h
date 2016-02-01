@@ -25,6 +25,7 @@ public:
     static bool parseArgs(int argc, char *argv[]);
     static bool parseArgs(std::vector<std::string> args);
     static bool updateSetting(std::string setting, std::string value);
+    static void initializeDataDir();
 
     static int getClientID();
     static std::string getClientKey();
@@ -41,6 +42,8 @@ private:
     static int clientPort;
     static std::string requestServer;
     static int requestProxyMode;
+
+    static std::string datadir;
 };
 
 #endif //HATH_SETTINGS_H

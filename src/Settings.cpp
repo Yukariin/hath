@@ -18,6 +18,7 @@ std::string Settings::clientHost = "";
 int Settings::clientPort = 0;
 std::string Settings::requestServer = "";
 int Settings::requestProxyMode = 0;
+std::string Settings::datadir = "";
 
 bool Settings::loginCredentialsAreSyntaxValid()
 {
@@ -27,7 +28,7 @@ bool Settings::loginCredentialsAreSyntaxValid()
 
 bool Settings::loadClientLoginFromFile()
 {
-    std::ifstream clientLogin(DATA_FILENAME_CLIENT_LOGIN);
+    std::ifstream clientLogin(path(datadir / DATA_FILENAME_CLIENT_LOGIN).c_str());
 
     if (clientLogin.bad())
         return false;
@@ -75,7 +76,8 @@ void Settings::promptForIDAndKey()
     }
     while (!loginCredentialsAreSyntaxValid());
 
-    putStringFileContents(DATA_FILENAME_CLIENT_LOGIN, (std::to_string(clientID) + "-" + clientKey));
+    putStringFileContents(path(datadir / DATA_FILENAME_CLIENT_LOGIN).string(),
+                          (std::to_string(clientID) + "-" + clientKey));
 }
 
 // note that these settings will currently be overwritten by any equal ones read from the server, so it should not be used to override server-side settings.
@@ -153,6 +155,11 @@ bool Settings::updateSetting(std::string setting, std::string value)
     }
 
     return false;
+}
+
+void Settings::initializeDataDir()
+{
+    datadir = checkAndCreateDir("data");
 }
 
 int Settings::getClientID()
