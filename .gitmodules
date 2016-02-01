@@ -10,3 +10,6 @@
 [submodule "lib/filesystem"]
 	path = lib/filesystem
 	url = https://github.com/boostorg/filesystem.git
+[submodule "lib/sqlitecpp"]
+	path = lib/sqlitecpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
