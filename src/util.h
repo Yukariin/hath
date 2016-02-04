@@ -61,7 +61,7 @@ inline std::vector<std::string>& split(const std::string &s, char delim, std::ve
 {
     std::stringstream ss(s);
     std::string item;
-    while (std::getline(ss, item, delim) && count < 0 ? 1 : count-- > 0)
+    while (std::getline(ss, item, delim) && elems.size() < count)
         elems.push_back(item);
 
     return elems;
@@ -87,7 +87,7 @@ inline std::string replace(std::string str, const std::string& from, const std::
     return str;
 }
 
-inline std::string checkAndCreateDir(std::string dir)
+inline path checkAndCreateDir(std::string dir)
 {
     path p(dir);
     if (is_regular_file(p))
@@ -96,7 +96,7 @@ inline std::string checkAndCreateDir(std::string dir)
     if (!is_directory(p))
         create_directories(p);
 
-    return dir;
+    return p;
 }
 
 inline void putStringFileContents(std::string file, std::string content)
