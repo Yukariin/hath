@@ -106,7 +106,7 @@ std::shared_ptr<HTTPResponse> HTTPResponse::begin(uint16_t code, std::string cus
 
 std::shared_ptr<HTTPResponse> HTTPResponse::header(std::string field, std::string value)
 {
-    headers.insert(std::pair<std::string,std::string>(field, value));
+    headers.insert(std::pair<std::string, std::string>(field, value));
 
     return shared_from_this();
 }
