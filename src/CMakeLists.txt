@@ -1,4 +1,4 @@
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 find_package(Threads REQUIRED)
 
@@ -6,7 +6,7 @@ include_directories("${PROJECT_SOURCE_DIR}/lib/http-parser")
 set(http_parser_SRCS "${PROJECT_SOURCE_DIR}/lib/http-parser/http_parser.c")
 
 include_directories("${PROJECT_SOURCE_DIR}/lib/sqlitecpp/include")
-file(GLOB_RECURSE sqlitecpp_SRCS ${PROJECT_SOURCE_DIR}/lib/sqlitecpp/src/*.cpp ${PROJECT_SOURCE_DIR}/lib/sqlitecpp/sqlite3/*.c)
+file(GLOB_RECURSE sqlitecpp_SRCS ${PROJECT_SOURCE_DIR}/lib/sqlitecpp/sqlite3/*.c ${PROJECT_SOURCE_DIR}/lib/sqlitecpp/src/*.cpp)
 
 include_directories("${PROJECT_SOURCE_DIR}/lib/asio/asio/include")
 add_definitions("-DASIO_STANDALONE")
