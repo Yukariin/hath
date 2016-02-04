@@ -4,6 +4,8 @@
 #include <string>
 #include <boost/filesystem/path.hpp>
 
+class Cache;
+
 class File
 {
 public:

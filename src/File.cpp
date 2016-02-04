@@ -1,6 +1,6 @@
 #include "File.h"
-
 #include "util.h"
+#include "Cache.h"
 
 #include <regex>
 
@@ -12,7 +12,7 @@ File::File(std::string hash, int size, int xres, int yres, std::string type) :
 
 boost::filesystem::path File::getLocalFilePath()
 {
-    return boost::filesystem::path(hash.substr(0, 2) / getFileid());
+    return boost::filesystem::path(Cache::getCacheDir() / hash.substr(0, 2) / getFileid());
 }
 
 std::string File::getFileid() {
