@@ -2,6 +2,7 @@
 
 #include "util.h"
 #include "Settings.h"
+#include "Out.h"
 
 boost::filesystem::path Cache::cachedir;
 boost::filesystem::path Cache::tmpdir;
@@ -24,7 +25,11 @@ Cache::Cache() :
     cachedir = checkAndCreateDir("cache");
     tmpdir = checkAndCreateDir("tmp");
 
+    Out::info("Cache: Initializing database engine...");
+
     initializeDatabase();
+
+    Out::info("Cache: Database initialized");
 }
 
 Cache::~Cache()
@@ -82,6 +87,8 @@ void Cache::resetFutureLasthits()
 {
     long nowtime = currentTime();
 
+    Out::info("Cache: Checking future lasthits on non-static files...");
+
     std::vector<std::string> removelist;
     SQLite::Statement s(sqlite, "SELECT fileid FROM CacheList WHERE lasthit>?;");
     s.bind(1, sqlite3_int64(nowtime + 2592000));
@@ -99,7 +106,10 @@ void Cache::resetFutureLasthits()
         deleteCachedFile.bind(1, fileid);
         deleteCachedFile.exec();
         boost::filesystem::remove(File::getHVFileFromFileid(fileid).getLocalFilePath());
+        Out::debug("Removed old static range file " + fileid);
     }
+
+    Out::info("Cache: Resetting remaining far-future lasthits...");
 
     SQLite::Statement u(sqlite, "UPDATE CacheList SET lasthit=? WHERE lasthit>?;");
     u.bind(1, sqlite3_int64(nowtime + 7776000));
@@ -123,13 +133,17 @@ void Cache::terminateDatabase()
 
 void Cache::initializeCacheHandler()
 {
+    Out::info("Cache: Initializing the cache system...");
+
     boost::filesystem::directory_iterator end_iter;
     for (boost::filesystem::directory_iterator dir_iter(tmpdir); dir_iter != end_iter ; ++dir_iter)
     {
-        if (boost::filesystem::is_regular_file(dir_iter->path()))
+        if (boost::filesystem::is_regular_file(dir_iter->path())) {
+            Out::debug("Deleted orphaned temporary file " + dir_iter->path().string());
             boost::filesystem::remove(dir_iter->path());
+        }
         else
-            std::cout << "Found a non-file " << dir_iter->path() << " in the temp directory, won't delete." << std::endl;
+            Out::warning("Found a non-file " + dir_iter->path().string() + " in the temp directory, won't delete.");
     }
 
     populateInternalCacheTable();
@@ -169,7 +183,7 @@ void Cache::populateInternalCacheTable()
 
     // load all the files directly from the cache directory itself and initialize the stored last access times for each file. last access times are used for the LRU-style cache.
 
-    std::cout << "Cache: Loading cache.. (this could take a while)" << std::endl;
+    Out::info("CacheHandler: Loading cache.. (this could take a while)");
 
     SQLite::Transaction t(sqlite);
     t.commit();
