@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <boost/filesystem/path.hpp>
 
 class Settings
 {
@@ -43,7 +44,7 @@ private:
     static std::string requestServer;
     static int requestProxyMode;
 
-    static std::string datadir;
+    static boost::filesystem::path datadir;
 };
 
 #endif //HATH_SETTINGS_H

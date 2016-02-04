@@ -18,7 +18,7 @@ std::string Settings::clientHost = "";
 int Settings::clientPort = 0;
 std::string Settings::requestServer = "";
 int Settings::requestProxyMode = 0;
-std::string Settings::datadir = "";
+boost::filesystem::path Settings::datadir("");
 
 bool Settings::loginCredentialsAreSyntaxValid()
 {
@@ -96,7 +96,7 @@ bool Settings::parseArgs(std::vector<std::string> args)
     {
         if (arg.find("--") == 0)
         {
-            auto split_str = split(arg.substr(2), '=');
+            auto split_str = split(arg.substr(2), '=', 2);
             if (split_str.size() == 2)
                 updateSetting(split_str[0], split_str[1]);
             else
