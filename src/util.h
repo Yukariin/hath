@@ -21,6 +21,7 @@
 #include <algorithm>
 
 #include <boost/filesystem.hpp>
+#include <chrono>
 
 using namespace boost::filesystem;
 
@@ -50,6 +51,13 @@ inline std::string http_time(std::time_t now = std::time(nullptr))
     std::tm tm = *std::gmtime(&now);
     strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
     return std::string(buf);
+}
+
+inline long currentTime()
+{
+    auto epoch = std::chrono::system_clock::now().time_since_epoch();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(epoch);
+    return duration.count();
 }
 
 /**
