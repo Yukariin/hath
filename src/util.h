@@ -47,9 +47,17 @@ std::string get_sha1_string(std::string s);
 // Returns the current time as an HTTP-formatted date string.
 inline std::string http_time(std::time_t now = std::time(nullptr))
 {
-    char buf[1000];
+    char buf[sizeof "Sun, 06 Nov 1994 08:49:37 GMT"];
     std::tm tm = *std::gmtime(&now);
-    strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    return std::string(buf);
+}
+
+inline std::string out_time(std::time_t now = std::time(nullptr))
+{
+    char buf[sizeof "2011-10-08T07:07:09Z"];
+    std::tm tm = *std::gmtime(&now);
+    strftime(buf, sizeof buf, "%FT%TZ", &tm);
     return std::string(buf);
 }
 
