@@ -18,7 +18,8 @@ std::string Settings::clientHost = "";
 int Settings::clientPort = 0;
 std::string Settings::requestServer = "";
 int Settings::requestProxyMode = 0;
-boost::filesystem::path Settings::datadir("");
+boost::filesystem::path Settings::datadir;
+std::map<std::string, int> Settings::staticRanges;
 
 bool Settings::loginCredentialsAreSyntaxValid()
 {
@@ -146,6 +147,15 @@ bool Settings::updateSetting(std::string setting, std::string value)
         {
             requestProxyMode = std::stoi(value);
         }
+        else if (setting == "static_ranges")
+        {
+            auto spl = split(value, ';');
+            for (std::string s : spl)
+            {
+                if (s.size() == 4)
+                    staticRanges.insert(std::make_pair(s, 1));
+            }
+        }
 
         return true;
     }
@@ -175,4 +185,12 @@ std::string Settings::getClientKey()
 int Settings::getClientPort()
 {
     return clientPort;
+}
+
+bool Settings::isStaticRange(std::string fileid)
+{
+    if (staticRanges.size())
+        return (staticRanges.find(fileid.substr(0, 4)) != staticRanges.end());
+
+    return false;
 }

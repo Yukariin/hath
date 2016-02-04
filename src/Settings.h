@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <boost/filesystem/path.hpp>
+#include <map>
 
 class Settings
 {
@@ -32,6 +33,8 @@ public:
     static std::string getClientKey();
     static int getClientPort();
 
+    static bool isStaticRange(std::string fileid);
+
 private:
     static int clientID;
     static std::string clientKey;
@@ -45,6 +48,8 @@ private:
     static int requestProxyMode;
 
     static boost::filesystem::path datadir;
+
+    static std::map<std::string, int> staticRanges;
 };
 
 #endif //HATH_SETTINGS_H
