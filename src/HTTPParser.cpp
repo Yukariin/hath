@@ -23,7 +23,8 @@ HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
     parser_settings.on_url = [](http_parser *parser, const char *dt, size_t l)
         {
             auto c = reinterpret_cast<HTTPParser*>(parser->data);
-            c->req->url += std::string(dt, l);
+            //c->req->url += std::string(dt, l);
+            c->req->url = std::string(dt, l);
             return 0;
         };
 

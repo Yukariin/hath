@@ -1,7 +1,7 @@
 #include "HTTPRequest.h"
 
-HTTPRequest::HTTPRequest(std::string method, std::string url, std::string host, header_map headers, std::vector<char> body, bool upgrade)
-    : method(method), url(url), host(host), headers(headers), body(body), upgrade(upgrade)
+HTTPRequest::HTTPRequest(std::string method, std::string url, header_map headers, std::vector<char> body, bool upgrade)
+    : method(method), url(url), headers(headers), body(body), upgrade(upgrade)
 {
 
 }
@@ -18,10 +18,10 @@ std::vector<char> HTTPRequest::toHTTP()
     std::stringstream ss;
 
     // Method and path
-    ss << method << " " << url << " HTTP/1.1\r\n";
+    ss << method << " " << url.path << " HTTP/1.1\r\n";
 
     // Generate the Date header on the fly
-    ss << "Host: " << host << "\r\n";
+    ss << "Host: " << url.host << "\r\n";
 
     // Headers
     for(auto it : headers)
