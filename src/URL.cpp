@@ -43,6 +43,12 @@ std::string URL::str() const
     return ss.str();
 }
 
-std::string URL::pathAndQuery() const {
-    return (path + "?" + query);
+std::string URL::pathAndQuery() const
+{
+    std::ostringstream ss;
+
+    if (!path.empty()) ss << path;
+    if (!query.empty()) ss << "?" << query;
+
+    return ss.str();
 }
