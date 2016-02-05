@@ -2,6 +2,7 @@
 #include <thread>
 
 #include "HTTPServer.h"
+#include "Out.h"
 
 HTTPServer::HTTPServer(unsigned int workers)
         : service(), work(service), acceptor(service), socket(service), manager(), request_handler()
@@ -21,6 +22,8 @@ HTTPServer::~HTTPServer()
 
 asio::error_code HTTPServer::listen(const tcp::endpoint &endpoint)
 {
+    Out::info("Starting up the internal HTTP Server...");
+
     asio::error_code error;
 
     acceptor.open(endpoint.protocol(), error);
@@ -34,6 +37,8 @@ asio::error_code HTTPServer::listen(const tcp::endpoint &endpoint)
 
     acceptor.listen(socket_base::max_connections, error);
     if (error) return error;
+
+    Out::info("Internal HTTP Server was successfully started, and is listening on port " + std::to_string(acceptor.local_endpoint().port()));
 
     this->accept();
     return error;
