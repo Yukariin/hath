@@ -6,6 +6,7 @@
 
 #include "http_parser.h"
 #include "HTTPRequest.h"
+#include "HTTPResponse.h"
 
 class HTTPParser
 {
@@ -19,14 +20,18 @@ public:
         GotRequest = 1
     };
 
-    Status parse(const char *data, std::size_t length);
+    Status parseRequest(const char *data, std::size_t length);
+    Status parseResponse(const char *data, std::size_t length);
+
     std::shared_ptr<HTTPRequest> getRequest();
+    std::shared_ptr<HTTPResponse> getResponse();
 
 private:
-    http_parser parser;
+    http_parser *parser;
     http_parser_settings parser_settings;
 
     std::shared_ptr<HTTPRequest> req;
+    std::shared_ptr<HTTPResponse> res;
     bool done = false;
     bool was_reading_header_value = false;
     std::string tmp_header_field;

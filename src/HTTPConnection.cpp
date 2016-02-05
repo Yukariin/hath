@@ -17,7 +17,7 @@ void HTTPConnection::read()
     {
         if (!error)
         {
-            HTTPParser::Status s = parser.parse(buffer.data(), bytesTransferred);
+            HTTPParser::Status s = parser.parseRequest(buffer.data(), bytesTransferred);
             auto req = parser.getRequest();
             auto res = std::make_shared<HTTPResponse>();
 

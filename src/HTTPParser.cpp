@@ -2,17 +2,19 @@
 
 HTTPParser::HTTPParser()
 {
-    http_parser_init(&parser, HTTP_REQUEST);
-    parser.data = this;
+    parser = new http_parser;
+    parser->data = this;
 }
 
 HTTPParser::~HTTPParser()
 {
-
+    delete parser;
 }
 
-HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
+HTTPParser::Status HTTPParser::parseRequest(const char *data, std::size_t length)
 {
+    http_parser_init(parser, HTTP_REQUEST);
+
     parser_settings.on_message_begin = [](http_parser *parser)
     {
         auto c = reinterpret_cast<HTTPParser*>(parser->data);
@@ -94,7 +96,98 @@ HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
         req = nullptr;
     }
 
-    std::size_t parsed = http_parser_execute(&parser, &parser_settings, data, length);
+    std::size_t parsed = http_parser_execute(parser, &parser_settings, data, length);
+
+    if (parsed != length)
+        return Error;
+
+    return (done ? GotRequest : KeepGoing);
+}
+
+HTTPParser::Status HTTPParser::parseResponse(const char *data, std::size_t length)
+{
+    http_parser_init(parser, HTTP_RESPONSE);
+
+    parser_settings.on_message_begin = [](http_parser *parser)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        c->res = std::make_shared<HTTPResponse>();
+        return 0;
+    };
+
+    parser_settings.on_status = [](http_parser *parser, const char *dt, size_t l)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        c->res->code = static_cast<uint16_t>(parser->status_code);
+        return 0;
+    };
+
+    parser_settings.on_header_field = [](http_parser *parser, const char *dt, size_t l)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        if (c->was_reading_header_value)
+        {
+            if (!c->tmp_header_field.empty())
+            {
+                c->res->headers[c->tmp_header_field] = c->tmp_header_value;
+                c->tmp_header_value.clear();
+            }
+
+            c->tmp_header_field = std::string(dt, l);
+            c->was_reading_header_value = false;
+        }
+        else
+        {
+            c->tmp_header_field += std::string(dt, l);
+        }
+        return 0;
+    };
+
+    parser_settings.on_header_value = [](http_parser *parser, const char *dt, size_t l)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        if (!c->was_reading_header_value)
+        {
+            c->tmp_header_value = std::string(dt, l);
+            c->was_reading_header_value = true;
+        }
+        else
+        {
+            c->tmp_header_value += std::string(dt, l);
+        }
+        return 0;
+    };
+
+    parser_settings.on_headers_complete = [](http_parser *parser)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        if (!c->tmp_header_field.empty())
+            c->res->headers[c->tmp_header_field] = c->tmp_header_value;
+        return 0;
+    };
+
+    parser_settings.on_body = [](http_parser *parser, const char *dt, size_t l)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        c->res->body.reserve(c->res->body.size() + l);
+        c->res->body.insert(c->res->body.end(), dt, dt + l);
+        return 0;
+    };
+
+    parser_settings.on_message_complete = [](http_parser *parser)
+    {
+        auto c = reinterpret_cast<HTTPParser*>(parser->data);
+        c->done = true;
+        return 0;
+    };
+
+    if (done)
+    {
+        done = false;
+        res = nullptr;
+    }
+
+    std::size_t parsed = http_parser_execute(parser, &parser_settings, data, length);
 
     if (parsed != length)
         return Error;
@@ -105,4 +198,9 @@ HTTPParser::Status HTTPParser::parse(const char *data, std::size_t length)
 std::shared_ptr<HTTPRequest> HTTPParser::getRequest()
 {
     return req;
+}
+
+std::shared_ptr<HTTPResponse> HTTPParser::getResponse()
+{
+    return res;
 }
