@@ -187,6 +187,11 @@ int Settings::getClientPort()
     return clientPort;
 }
 
+int Settings::getServerTime()
+{
+    return static_cast<int>(currentTime() - serverTimeDelta);
+}
+
 bool Settings::isStaticRange(std::string fileid)
 {
     if (staticRanges.size())

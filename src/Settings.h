@@ -32,7 +32,7 @@ public:
     static int getClientID();
     static std::string getClientKey();
     static int getClientPort();
-
+    static int getServerTime();
     static bool isStaticRange(std::string fileid);
 
 private:
