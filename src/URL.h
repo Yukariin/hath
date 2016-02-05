@@ -16,6 +16,7 @@ public:
     std::string fragment;
 
     std::string str() const;
+    std::string pathAndQuery() const;
 };
 
 #endif //HATH_URL_H

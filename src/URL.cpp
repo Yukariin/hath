@@ -42,3 +42,7 @@ std::string URL::str() const
 
     return ss.str();
 }
+
+std::string URL::pathAndQuery() const {
+    return (path + "?" + query);
+}

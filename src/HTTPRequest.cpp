@@ -18,7 +18,7 @@ std::vector<char> HTTPRequest::toHTTP()
     std::stringstream ss;
 
     // Method and path
-    ss << method << " " << url.path << " HTTP/1.1\r\n";
+    ss << method << " " << url.pathAndQuery() << " HTTP/1.1\r\n";
 
     // Generate the Date header on the fly
     ss << "Host: " << url.host << "\r\n";
