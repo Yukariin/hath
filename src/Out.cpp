@@ -59,6 +59,8 @@ std::ofstream Out::startLogger(std::string logfile)
 
         return std::ofstream(logfile);
     }
+
+    return std::ofstream();
 }
 
 bool Out::stopLogger(std::ofstream &logfile)
@@ -90,7 +92,7 @@ void Out::log(std::string data, int severity)
 
     if ((severity & LOGERR) > 0)
     {
-        log(data, logerr, false);
+        log(data, logerr, true);
         if (++logerr_count > 100000)
         {
             logerr_count = 0;
@@ -106,21 +108,25 @@ void Out::log(std::string data, int severity)
 
 void Out::log(std::string data, std::ofstream &writer, bool flush)
 {
-    writer << data << std::endl;
-    if (flush)
-        writer.flush();
+    if (writer.is_open())
+    {
+        writer << data << std::endl;
+
+        if (flush)
+            writer.flush();
+    }
 }
 
 void Out::print(std::string x, std::string name, int severity)
 {
     bool output = (severity & OUTPUT) > 0;
-    bool l = (severity & (LOGOUT | LOGERR)) > 0;
+    bool log = (severity & (LOGOUT | LOGERR)) > 0;
 
-    static std::mutex m;
-    std::lock_guard<std::mutex> lock(m);
-
-    if (output || l)
+    if (output || log)
     {
+        static std::mutex m;
+        std::lock_guard<std::mutex> lock(m);
+        
         std::ostringstream data;
         data << out_time()
         << " [" << name << "] "
@@ -129,7 +135,7 @@ void Out::print(std::string x, std::string name, int severity)
         if (output)
             std::cout << data.str() << std::endl;
 
-        if (l)
-            log(data.str(), severity);
+        if (log)
+            Out::log(data.str(), severity);
     }
 }
