@@ -24,6 +24,7 @@ public:
     static bool loginCredentialsAreSyntaxValid();
     static bool loadClientLoginFromFile();
     static void promptForIDAndKey();
+    static bool parseAndUpdateSettings(std::vector<std::string> settings);
     static bool parseArgs(int argc, char *argv[]);
     static bool parseArgs(std::vector<std::string> args);
     static bool updateSetting(std::string setting, std::string value);
@@ -40,6 +41,7 @@ private:
     static std::string clientKey;
     static int serverTimeDelta;
 
+    static std::vector<std::string> rpcServers;
     static std::string imageServer;
     static std::string clientName;
     static std::string clientHost;

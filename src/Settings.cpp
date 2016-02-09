@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include "util.h"
+#include "Out.h"
 
 #include <iterator>
 #include <regex>
@@ -12,6 +13,7 @@ const std::string Settings::DATA_FILENAME_LASTHIT_HISTORY = "lasthit_history";
 int Settings::clientID = 0;
 std::string Settings::clientKey = "";
 int Settings::serverTimeDelta = 0;
+std::vector<std::string> Settings::rpcServers;
 std::string Settings::imageServer = "";
 std::string Settings::clientName = "";
 std::string Settings::clientHost = "";
@@ -81,6 +83,21 @@ void Settings::promptForIDAndKey()
                           (std::to_string(clientID) + "-" + clientKey));
 }
 
+bool Settings::parseAndUpdateSettings(std::vector<std::string> settings)
+{
+    if (!settings.size())
+        return false;
+
+    for (std::string s : settings)
+    {
+        auto spl = split(s, '=', 2);
+        if (spl.size() == 2)
+            updateSetting(spl[0], spl[1]);
+    }
+
+    return true;
+}
+
 // note that these settings will currently be overwritten by any equal ones read from the server, so it should not be used to override server-side settings.
 bool Settings::parseArgs(int argc, char *argv[])
 {
@@ -122,6 +139,12 @@ bool Settings::updateSetting(std::string setting, std::string value)
         {
             clientName = value;
         }
+        else if (setting == "rpc_server_ip")
+        {
+            auto spl = split(value, ';');
+            for (std::string s : spl)
+                rpcServers.push_back(s);
+        }
         else if (setting == "image_server")
         {
             imageServer = value;
@@ -156,12 +179,17 @@ bool Settings::updateSetting(std::string setting, std::string value)
                     staticRanges.insert(std::make_pair(s, 1));
             }
         }
+        else
+        {
+            Out::warning("Unknown setting " + setting + " = " + value);
+            return false;
+        }
 
         return true;
     }
     catch (std::exception e)
     {
-        std::cout << e.what() << std::endl;
+        Out::warning("Failed parsing setting " + setting + " = " + value);
     }
 
     return false;
