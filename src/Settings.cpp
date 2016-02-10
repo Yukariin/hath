@@ -139,6 +139,11 @@ bool Settings::updateSetting(std::string setting, std::string value)
         {
             clientName = value;
         }
+        else if (setting == "server_time")
+        {
+            serverTimeDelta = (std::stoi(value) - static_cast<int>(currentTime()));
+            Out::debug("Setting altered: serverTimeDelta=" + std::to_string(serverTimeDelta));
+        }
         else if (setting == "rpc_server_ip")
         {
             auto spl = split(value, ';');
