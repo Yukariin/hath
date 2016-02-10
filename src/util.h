@@ -19,9 +19,11 @@
 #include <functional>
 #include <fstream>
 #include <algorithm>
-
-#include <boost/filesystem.hpp>
+#include <map>
 #include <chrono>
+
+#include "boost/filesystem.hpp"
+#include "Out.h"
 
 using namespace boost::filesystem;
 
@@ -129,5 +131,7 @@ inline std::vector<char> get_rand_bytes(int size)
 
     return ret;
 }
+
+std::map<std::string, std::string> parseAdditional(std::string additional);
 
 #endif //HATH_UTIL_H
