@@ -2,6 +2,9 @@
 #define HATH_HTTPCLIENT_H
 
 #include "asio.hpp"
+#include "HTTPResponse.h"
+
+#include <memory>
 
 using namespace asio;
 using namespace asio::ip;
@@ -11,7 +14,7 @@ class HTTPClient
 public:
     HTTPClient();
 
-    void get(std::string url);
+    std::shared_ptr<HTTPResponse> get(std::string url);
 
 private:
     io_service service;
