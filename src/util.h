@@ -36,16 +36,6 @@ struct ci_less : std::binary_function<std::string, std::string, bool>
     }
 };
 
-
-/* SHA-1 hash
- *
- * Copyright (c) 2014 Project Nayuki
- * http://www.nayuki.io/page/fast-sha1-hash-implementation-in-x86-assembly
- */
-void sha1_compress(uint32_t state[5], const uint8_t block[64]);
-void get_sha1_hash(const uint8_t *message, uint32_t len, uint32_t hash[5]);
-std::string get_sha1_string(std::string s);
-
 // Returns the current time as an HTTP-formatted date string.
 inline std::string http_time(std::time_t now = std::time(nullptr))
 {
