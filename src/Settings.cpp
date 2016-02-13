@@ -54,6 +54,12 @@ bool Settings::loadClientLoginFromFile()
 
 void Settings::promptForIDAndKey()
 {
+    Out::info("Before you can use this client, you will have to register it at http://hentaiathome.net/");
+    Out::info("IMPORTANT: YOU NEED A SEPARATE IDENT FOR EACH CLIENT YOU WANT TO RUN.");
+    Out::info("DO NOT ENTER AN IDENT THAT WAS ASSIGNED FOR A DIFFERENT CLIENT.");
+    Out::info("After registering, enter your ID and Key below to start your client.");
+    Out::info("(You will only have to do this once.)\n");
+
     clientID = 0;
     clientKey = "";
 
@@ -65,7 +71,7 @@ void Settings::promptForIDAndKey()
         {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid Client ID. Please try again." << std::endl;
+            Out::warning("Invalid Client ID. Please try again.");
         }
     }
     while (clientID < 1000);
@@ -75,7 +81,7 @@ void Settings::promptForIDAndKey()
         std::cout << "Enter Client Key: ";
         std::cin >> clientKey;
         if (!loginCredentialsAreSyntaxValid())
-            std::cout << "Invalid Client Key, it must be exactly 20 alphanumerical characters. Please try again." << std::endl;
+            Out::warning("Invalid Client Key, it must be exactly 20 alphanumerical characters. Please try again.");
     }
     while (!loginCredentialsAreSyntaxValid());
 
@@ -119,6 +125,10 @@ bool Settings::parseArgs(std::vector<std::string> args)
                 updateSetting(split_str[0], split_str[1]);
             else
                 updateSetting(split_str[0], "true");
+        }
+        else
+        {
+            Out::warning("Invalid command argument: " + arg);
         }
     }
 
@@ -190,6 +200,7 @@ bool Settings::updateSetting(std::string setting, std::string value)
             return false;
         }
 
+        Out::debug("Setting altered: " + setting + "=" + value);
         return true;
     }
     catch (std::exception e)
@@ -222,7 +233,7 @@ int Settings::getClientPort()
 
 int Settings::getServerTime()
 {
-    return static_cast<int>(currentTime() - serverTimeDelta);
+    return static_cast<int>(currentTime() + serverTimeDelta);
 }
 
 bool Settings::isStaticRange(std::string fileid)
