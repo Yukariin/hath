@@ -4,7 +4,7 @@
 #include "HTTPHandler.h"
 
 HTTPConnection::HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager, HTTPHandler &handler)
-        : socket(std::move(socket)), manager(manager), handler(handler)
+        : socket(std::move(socket)), manager(manager), handler(handler), parser(HTTPParser::Request)
 {
 
 }
@@ -17,13 +17,13 @@ void HTTPConnection::read()
     {
         if (!error)
         {
-            HTTPParser::Status s = parser.parseRequest(buffer.data(), bytesTransferred);
-            auto req = parser.getRequest();
+            HTTPParser::Status s = parser.parseChunk(buffer.data(), bytesTransferred);
+
             auto res = std::make_shared<HTTPResponse>();
 
             if (s == HTTPParser::GotRequest)
             {
-                handler.handleRequest(req, res);
+                handler.handleRequest(parser.req, res);
                 write(res->toHTTP());
             }
             else if (s == HTTPParser::Error)
