@@ -19,6 +19,8 @@ public:
     Out();
     ~Out();
 
+    static void flushLogs();
+
     static void debug(std::string x);
     static void info(std::string x);
     static void warning(std::string x);

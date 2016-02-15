@@ -48,6 +48,11 @@ void Out::error(std::string x)
     print(x, "ERROR", ERROR);
 }
 
+void Out::flushLogs()
+{
+    logout.flush();
+}
+
 std::ofstream Out::startLogger(std::string logfile)
 {
     if (logfile.size())
@@ -119,6 +124,7 @@ void Out::log(std::string data, std::ofstream &writer, bool flush)
 
 void Out::print(std::string x, std::string name, int severity)
 {
+    std::string nowtime = out_time();
     bool output = (severity & OUTPUT) > 0;
     bool log = (severity & (LOGOUT | LOGERR)) > 0;
 
@@ -128,7 +134,7 @@ void Out::print(std::string x, std::string name, int severity)
         std::lock_guard<std::mutex> lock(m);
         
         std::ostringstream data;
-        data << out_time()
+        data << nowtime
         << " [" << name << "] "
         << x;
 
