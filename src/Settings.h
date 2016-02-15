@@ -49,12 +49,12 @@ private:
     static std::string requestServer;
     static int requestProxyMode;
 
-    static bool forceDirty = false;
-    static bool verifyCache = false;
-    static bool skipFreeSpaceCheck = false;
-    static bool warnNewClient = false;
-    static bool useLessMemory = false;
-    static bool disableBWM = false;
+    static bool forceDirty;
+    static bool verifyCache;
+    static bool skipFreeSpaceCheck;
+    static bool warnNewClient;
+    static bool useLessMemory;
+    static bool disableBWM;
 
     static boost::filesystem::path datadir;
 
