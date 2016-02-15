@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include "util.h"
 #include "Out.h"
+#include "HathClient.h"
 
 #include <iterator>
 #include <regex>
@@ -20,6 +21,12 @@ std::string Settings::clientHost = "";
 int Settings::clientPort = 0;
 std::string Settings::requestServer = "";
 int Settings::requestProxyMode = 0;
+bool Settings::forceDirty = false;
+bool Settings::verifyCache = false;
+bool Settings::skipFreeSpaceCheck = false;
+bool Settings::warnNewClient = false;
+bool Settings::useLessMemory = false;
+bool Settings::disableBWM = false;
 boost::filesystem::path Settings::datadir;
 std::map<std::string, int> Settings::staticRanges;
 
@@ -143,11 +150,13 @@ bool Settings::updateSetting(std::string setting, std::string value)
     {
         if (setting == "min_client_build")
         {
-
+            if (std::stoi(value) > CLIENT_BUILD)
+                HathClient::dieWithError("Your client is too old to connect to the Hentai@Home Network. Please download the new version of the client from http://hentaiathome.net/");
         }
-        else if (setting == "name")
+        if (setting == "cur_client_build")
         {
-            clientName = value;
+            if (std::stoi(value) > CLIENT_BUILD)
+                warnNewClient = true;
         }
         else if (setting == "server_time")
         {

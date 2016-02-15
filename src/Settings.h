@@ -49,6 +49,13 @@ private:
     static std::string requestServer;
     static int requestProxyMode;
 
+    static bool forceDirty = false;
+    static bool verifyCache = false;
+    static bool skipFreeSpaceCheck = false;
+    static bool warnNewClient = false;
+    static bool useLessMemory = false;
+    static bool disableBWM = false;
+
     static boost::filesystem::path datadir;
 
     static std::map<std::string, int> staticRanges;
