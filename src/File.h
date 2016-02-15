@@ -16,7 +16,7 @@ public:
 
     // static stuff
     static bool isValidHVFileid(std::string fileid);
-    static File getHVFileFromFileid(std::string fileid);
+    static std::shared_ptr<File> getHVFileFromFileid(std::string fileid);
 
 private:
     std::string hash;

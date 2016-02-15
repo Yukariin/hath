@@ -21,7 +21,7 @@ std::string File::getFileid() {
     << size << "-"
     << xres << "-"
     << yres << "-"
-    << type << "-";
+    << type;
     return ss.str();
 }
 
@@ -36,7 +36,7 @@ bool File::isValidHVFileid(std::string fileid)
     return std::regex_match(fileid.c_str(), validFileid);
 }
 
-File File::getHVFileFromFileid(std::string fileid)
+std::shared_ptr<File> File::getHVFileFromFileid(std::string fileid)
 {
     if (isValidHVFileid(fileid))
     {
@@ -47,6 +47,7 @@ File File::getHVFileFromFileid(std::string fileid)
         int yres = std::stoi(fileidParts[3]);
         std::string type = fileidParts[4];
 
-        return File(hash, size, xres, yres, type);
+        return std::make_shared<File>(hash, size, xres, yres, type);
     }
+    return nullptr;
 }
