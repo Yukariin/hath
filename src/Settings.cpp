@@ -153,7 +153,7 @@ bool Settings::updateSetting(std::string setting, std::string value)
             if (std::stoi(value) > CLIENT_BUILD)
                 HathClient::dieWithError("Your client is too old to connect to the Hentai@Home Network. Please download the new version of the client from http://hentaiathome.net/");
         }
-        if (setting == "cur_client_build")
+        else if (setting == "cur_client_build")
         {
             if (std::stoi(value) > CLIENT_BUILD)
                 warnNewClient = true;
