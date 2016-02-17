@@ -9,6 +9,7 @@
 
 using namespace boost::filesystem;
 
+bool Out::writeLogs;
 std::ofstream Out::logout;
 std::ofstream Out::logerr;
 int Out::logout_count;
@@ -17,6 +18,8 @@ int Out::logerr_count;
 Out::Out()
 {
     Settings::initializeDataDir();
+
+    writeLogs = true;
 
     logout = startLogger("data/log_out");
     logerr = startLogger("data/log_err");
@@ -28,24 +31,14 @@ Out::~Out()
     stopLogger(logerr);
 }
 
-void Out::debug(std::string x)
+void Out::disableLogging()
 {
-    print(x, "debug", DEBUG);
-}
-
-void Out::info(std::string x)
-{
-    print(x, "info", INFO);
-}
-
-void Out::warning(std::string x)
-{
-    print(x, "WARN", WARNING);
-}
-
-void Out::error(std::string x)
-{
-    print(x, "ERROR", ERROR);
+    if (writeLogs)
+    {
+        info("Logging ended.");
+        writeLogs = false;
+        flushLogs();
+    }
 }
 
 void Out::flushLogs()
@@ -80,7 +73,7 @@ void Out::log(std::string data, int severity)
     static std::mutex m;
     std::lock_guard<std::mutex> lock(m);
 
-    if ((severity & LOGOUT) > 0)
+    if (((severity & LOGOUT) > 0) && writeLogs)
     {
         log(data, logout, false);
         if (++logout_count > 100000)
@@ -144,4 +137,24 @@ void Out::print(std::string x, std::string name, int severity)
         if (log)
             Out::log(data.str(), severity);
     }
+}
+
+void Out::debug(std::string x)
+{
+    print(x, "debug", DEBUG);
+}
+
+void Out::info(std::string x)
+{
+    print(x, "info", INFO);
+}
+
+void Out::warning(std::string x)
+{
+    print(x, "WARN", WARNING);
+}
+
+void Out::error(std::string x)
+{
+    print(x, "ERROR", ERROR);
 }

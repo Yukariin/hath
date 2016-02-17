@@ -19,6 +19,7 @@ public:
     Out();
     ~Out();
 
+    static void disableLogging();
     static void flushLogs();
 
     static void debug(std::string x);
@@ -27,6 +28,7 @@ public:
     static void error(std::string x);
 
 private:
+    static bool writeLogs;
     static std::ofstream logout, logerr;
     static int logout_count, logerr_count;
 
