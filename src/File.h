@@ -2,7 +2,8 @@
 #define HATH_FILE_H
 
 #include <string>
-#include <boost/filesystem/path.hpp>
+
+#include "boost/filesystem/path.hpp"
 
 class File
 {
@@ -16,6 +17,7 @@ public:
 
     // static stuff
     static bool isValidHVFileid(std::string fileid);
+    static std::shared_ptr<File> getHVFileFromFile(boost::filesystem::path file, bool verify);
     static std::shared_ptr<File> getHVFileFromFileid(std::string fileid);
 
 private:
