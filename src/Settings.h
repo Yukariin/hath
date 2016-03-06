@@ -34,7 +34,15 @@ public:
     static std::string getClientKey();
     static int getClientPort();
     static int getServerTime();
+    static long getDiskLimitBytes();
+    static long getDiskMinRemainingBytes();
+    static bool isForceDirty();
+    static bool isVerifyCache();
+    static bool isSkipFreeSpaceCheck();
+    static bool isWarnNewClient();
+    static bool isUseLessMemory();
     static bool isStaticRange(std::string fileid);
+    static int getStaticRangeCount();
 
 private:
     static int clientID;
@@ -48,6 +56,11 @@ private:
     static int clientPort;
     static std::string requestServer;
     static int requestProxyMode;
+
+    static int throttle_bytes;
+    static long hourbwlimit_bytes;
+    static long disklimit_bytes;
+    static long diskremaining_bytes;
 
     static bool forceDirty;
     static bool verifyCache;

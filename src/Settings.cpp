@@ -21,6 +21,10 @@ std::string Settings::clientHost = "";
 int Settings::clientPort = 0;
 std::string Settings::requestServer = "";
 int Settings::requestProxyMode = 0;
+int Settings::throttle_bytes = 0;
+long Settings::hourbwlimit_bytes = 0;
+long Settings::disklimit_bytes = 0;
+long Settings::diskremaining_bytes = 0;
 bool Settings::forceDirty = false;
 bool Settings::verifyCache = false;
 bool Settings::skipFreeSpaceCheck = false;
@@ -162,6 +166,7 @@ bool Settings::updateSetting(std::string setting, std::string value)
         {
             serverTimeDelta = (std::stoi(value) - static_cast<int>(currentTime()));
             Out::debug("Setting altered: serverTimeDelta=" + std::to_string(serverTimeDelta));
+            return true;
         }
         else if (setting == "rpc_server_ip")
         {
@@ -193,6 +198,51 @@ bool Settings::updateSetting(std::string setting, std::string value)
         else if (setting == "request_proxy_mode")
         {
             requestProxyMode = std::stoi(value);
+        }
+        else if (setting == "throttle_bytes")
+        {
+            // THIS SHOULD NOT BE ALTERED BY THE CLIENT AFTER STARTUP. Using the website interface will update the throttle value for the dispatcher first, and update the client on the first stillAlive test.
+            throttle_bytes = std::stoi(value);
+        }
+        else if (setting == "hourbwlimit_bytes")
+        {
+            hourbwlimit_bytes = std::stol(value);
+        }
+        else if (setting == "disklimit_bytes")
+        {
+            long newLimit = std::stol(value);
+
+            if (newLimit >= disklimit_bytes)
+                disklimit_bytes = newLimit;
+            else
+                Out::warning("The disk limit has been reduced. However, this change will not take effect until you restart your client.");
+        }
+        else if (setting == "diskremaining_bytes")
+        {
+            diskremaining_bytes = std::stol(value);
+        }
+        else if(setting == "force_dirty")
+        {
+            forceDirty = value == "true";
+        }
+        else if(setting == "verify_cache")
+        {
+            verifyCache = value == "true";
+        }
+        else if(setting == "use_less_memory")
+        {
+            useLessMemory = value == "true";
+        }
+        else if(setting == "disable_logging")
+        {
+            Out::disableLogging();
+        }
+        else if(setting == "disable_bwm")
+        {
+            disableBWM = value == "true";
+        }
+        else if(setting == "skip_free_space_check") {
+            skipFreeSpaceCheck = value == "true";
         }
         else if (setting == "static_ranges")
         {
@@ -244,6 +294,35 @@ int Settings::getServerTime()
 {
     return static_cast<int>(currentTime() + serverTimeDelta);
 }
+long Settings::getDiskLimitBytes()
+{
+    return disklimit_bytes;
+}
+
+long Settings::getDiskMinRemainingBytes()
+{
+    return diskremaining_bytes;
+}
+
+bool Settings::isVerifyCache()
+{
+    return verifyCache;
+}
+
+bool Settings::isSkipFreeSpaceCheck()
+{
+    return skipFreeSpaceCheck;
+}
+
+bool Settings::isForceDirty()
+{
+    return forceDirty;
+}
+
+bool Settings::isWarnNewClient()
+{
+    return warnNewClient;
+}
 
 bool Settings::isStaticRange(std::string fileid)
 {
@@ -251,4 +330,16 @@ bool Settings::isStaticRange(std::string fileid)
         return (staticRanges.find(fileid.substr(0, 4)) != staticRanges.end());
 
     return false;
+}
+
+bool Settings::isUseLessMemory() {
+    return useLessMemory;
+}
+
+int Settings::getStaticRangeCount()
+{
+    if (staticRanges.size())
+        return static_cast<int>(staticRanges.size());
+
+    return 0;
 }
