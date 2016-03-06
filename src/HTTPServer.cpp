@@ -5,7 +5,7 @@
 #include "Out.h"
 
 HTTPServer::HTTPServer(unsigned int workers)
-        : service(), work(service), acceptor(service), socket(service), manager(), request_handler()
+        : service(), work(service), acceptor(service), manager(), request_handler()
 {
     for(unsigned int i = 0; i < workers; i++)
         worker_threads.emplace_back([&]{ service.run(); });
@@ -16,8 +16,8 @@ HTTPServer::~HTTPServer()
     acceptor.close();
     manager.stopAll();
     service.stop();
-    for(auto it = worker_threads.begin(); it != worker_threads.end(); it++)
-        it->join();
+    for(auto &t : worker_threads)
+        t.join();
 }
 
 asio::error_code HTTPServer::listen(const tcp::endpoint &endpoint)
@@ -40,7 +40,7 @@ asio::error_code HTTPServer::listen(const tcp::endpoint &endpoint)
 
     Out::info("Internal HTTP Server was successfully started, and is listening on port " + std::to_string(acceptor.local_endpoint().port()));
 
-    this->accept();
+    accept();
     return error;
 }
 
@@ -66,16 +66,18 @@ void HTTPServer::stop()
 
 void HTTPServer::accept()
 {
-    acceptor.async_accept(socket, [=](const asio::error_code &error)
+    newConnection = std::make_shared<HTTPConnection>(service, manager, request_handler);
+    
+    acceptor.async_accept(newConnection->getSocket(), [=](const asio::error_code &error)
     {
         if (!acceptor.is_open())
             return;
 
         if (!error)
         {
-            manager.start(std::make_shared<HTTPConnection>(std::move(socket), manager, request_handler));
+            manager.start(newConnection);
         }
 
-        this->accept();
+        accept();
     });
 }

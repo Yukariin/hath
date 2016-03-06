@@ -3,13 +3,13 @@
 
 #include <deque>
 #include <memory>
+#include <thread>
 
 #include "asio.hpp"
+
 #include "HTTPConnection.h"
 #include "HTTPConnectionManager.h"
 #include "HTTPHandler.h"
-
-#define BufferSize 1024
 
 using namespace asio;
 using namespace asio::ip;
@@ -20,7 +20,7 @@ public:
     HTTPServer(const HTTPServer&) = delete;
     HTTPServer& operator=(const HTTPServer&) = delete;
 
-    HTTPServer(unsigned int workers);
+    explicit HTTPServer(unsigned int workers);
     virtual ~HTTPServer();
 
     asio::error_code listen(const tcp::endpoint &endpoint);
@@ -37,7 +37,7 @@ private:
     io_service::work work;
     std::deque<std::thread> worker_threads;
     tcp::acceptor acceptor;
-    tcp::socket socket;
+    std::shared_ptr<HTTPConnection> newConnection;
     HTTPConnectionManager manager;
     HTTPHandler request_handler;
 };
