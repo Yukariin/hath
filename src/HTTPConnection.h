@@ -5,27 +5,35 @@
 #include <memory>
 
 #include "asio.hpp"
+
 #include "HTTPParser.h"
 #include "HTTPHandler.h"
 
+using namespace asio;
 using namespace asio::ip;
 
 class HTTPConnectionManager;
 
-class HTTPConnection
-    : public std::enable_shared_from_this<HTTPConnection>
+class HTTPConnection : public std::enable_shared_from_this<HTTPConnection>
 {
 public:
-    HTTPConnection(tcp::socket socket, HTTPConnectionManager &manager, HTTPHandler &handler);
+    HTTPConnection(const HTTPConnection&) = delete;
+    HTTPConnection& operator=(const HTTPConnection&) = delete;
+    
+    explicit HTTPConnection(io_service &service, HTTPConnectionManager &manager, HTTPHandler &handler);
 
-    void read();
-    void write(std::vector<char> data);
     void start();
+    void do_read();
+    void do_write(std::vector<char> data);
     void stop();
+    tcp::socket& getSocket();
 
 private:
     tcp::socket socket;
+    
     std::array<char, 8192> buffer;
+    std::array<char, 65536> outbuf;
+    
     HTTPConnectionManager& manager;
     HTTPHandler& handler;
     HTTPParser parser;
