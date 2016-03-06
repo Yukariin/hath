@@ -68,6 +68,26 @@ bool Out::stopLogger(std::ofstream &logfile)
     return true;
 }
 
+void Out::debug(std::string x)
+{
+    print(x, "debug", DEBUG);
+}
+
+void Out::info(std::string x)
+{
+    print(x, "info", INFO);
+}
+
+void Out::warning(std::string x)
+{
+    print(x, "WARN", WARNING);
+}
+
+void Out::error(std::string x)
+{
+    print(x, "ERROR", ERROR);
+}
+
 void Out::log(std::string data, int severity)
 {
     static std::mutex m;
@@ -126,35 +146,19 @@ void Out::print(std::string x, std::string name, int severity)
         static std::mutex m;
         std::lock_guard<std::mutex> lock(m);
         
-        std::ostringstream data;
-        data << nowtime
-        << " [" << name << "] "
-        << x;
+        auto spl = split(x, '\n');
+        for (std::string s : spl)
+        {
+            std::ostringstream data;
+            data << nowtime
+            << " [" << name << "] "
+            << s;
 
-        if (output)
-            std::cout << data.str() << std::endl;
+            if (output)
+                std::cout << data.str() << std::endl;
 
-        if (log)
-            Out::log(data.str(), severity);
+            if (log)
+                Out::log(data.str(), severity);
+        }
     }
-}
-
-void Out::debug(std::string x)
-{
-    print(x, "debug", DEBUG);
-}
-
-void Out::info(std::string x)
-{
-    print(x, "info", INFO);
-}
-
-void Out::warning(std::string x)
-{
-    print(x, "WARN", WARNING);
-}
-
-void Out::error(std::string x)
-{
-    print(x, "ERROR", ERROR);
 }
