@@ -1,5 +1,4 @@
 #include "HTTPResponse.h"
-#include "util.h"
 
 #include <unordered_map>
 
@@ -142,7 +141,7 @@ std::vector<char> HTTPResponse::toHTTP()
     ss << "HTTP/1.1 " << code << " " << reason << "\r\n";
 
     // Generate the Date header on the fly
-    ss << "Date: " << http_time() << "\r\n";
+    ss << "Date: " << http_date() << "\r\n";
 
     // Headers
     for(auto it = headers.begin(); it != headers.end(); it++)

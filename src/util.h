@@ -8,12 +8,13 @@
     #include <string.h>
 #endif
 
+#include <time.h>
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <stdint.h>
 #include <iomanip>
-#include <time.h>
 #include <vector>
 #include <random>
 #include <functional>
@@ -23,6 +24,7 @@
 #include <chrono>
 
 #include "boost/filesystem.hpp"
+
 #include "Out.h"
 
 using namespace boost::filesystem;
@@ -37,11 +39,12 @@ struct ci_less : std::binary_function<std::string, std::string, bool>
 };
 
 // Returns the current time as an HTTP-formatted date string.
-inline std::string http_time(std::time_t now = std::time(nullptr))
+inline std::string http_date(std::time_t now = std::time(nullptr))
 {
-    char buf[sizeof "Sun, 06 Nov 1994 08:49:37 GMT"];
+    char buf[sizeof "Sun, 06 Nov 1994 08:49:37 GMT"]; // 29
     std::tm tm = *std::gmtime(&now);
-    strftime(buf, sizeof buf, "%a, %d %b %Y %H:%M:%S %Z", &tm);
+    strftime(buf, sizeof buf, "%a, %d %b %Y %T %Z", &tm);
+    
     return std::string(buf);
 }
 
@@ -50,6 +53,7 @@ inline std::string out_time(std::time_t now = std::time(nullptr))
     char buf[sizeof "2011-10-08T07:07:09Z"];
     std::tm tm = *std::gmtime(&now);
     strftime(buf, sizeof buf, "%FT%TZ", &tm);
+    
     return std::string(buf);
 }
 
@@ -57,42 +61,91 @@ inline long currentTime()
 {
     auto epoch = std::chrono::system_clock::now().time_since_epoch();
     auto duration = std::chrono::duration_cast<std::chrono::seconds>(epoch);
+    
     return duration.count();
+}
+
+inline long currentTimeMills()
+{
+    auto epoch = std::chrono::system_clock::now().time_since_epoch();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
+
+    return duration.count();
+}
+
+// returns count of non-overlapping occurrences of 'sub' in 'str'
+inline int countSubstring(const std::string& str, const std::string& sub)
+{
+    if (sub.length() == 0) return 0;
+    
+    int count = 0;
+    for (size_t offset = str.find(sub); offset != std::string::npos;
+         offset = str.find(sub, offset + sub.length()))
+    {
+        ++count;
+    }
+    
+    return count;
 }
 
 /**
  * Splits a string by a delimiter.
  *
- * Based on an answer to http://stackoverflow.com/questions/236129
+ * Based on Go genSplit
  */
-inline std::vector<std::string>& split(const std::string &s, char delim, std::vector<std::string> &elems, int count = -1)
+inline std::vector<std::string> split(const std::string &s, char delim, int n = -1)
 {
+    if (n < 0)
+        n = std::count(s.begin(), s.end(), delim) + 1;
+        
     std::stringstream ss(s);
     std::string item;
-    while (std::getline(ss, item, delim) && elems.size() < count)
+    std::vector<std::string> elems;
+    
+    while (std::getline(ss, item, delim) && elems.size() + 1 < n)
+    {
         elems.push_back(item);
 
-    return elems;
-}
-/// @overload
-inline std::vector<std::string> split(const std::string &s, char delim, int count = -1)
-{
-    std::vector<std::string> elems;
-    split(s, delim, elems, count);
+    }
+    std::getline(ss, item);
+    elems.push_back(item);
+    
     return elems;
 }
 
 // http://stackoverflow.com/questions/3418231
-inline std::string replace(std::string str, const std::string& from, const std::string& to, int count = -1)
+inline std::string replace(std::string str, const std::string& from, const std::string& to, int n = -1)
 {
+    if (from == to || n == 0)
+        return str;
+    
+    int m = countSubstring(str, from);
+    if (m == 0)
+        return str;
+    else if (n < 0 || m < n)
+        n = m;
+    
     size_t start_pos = 0;
-    while ((start_pos = str.find(from, start_pos)) != std::string::npos && count < 0 ? 1 : count-- > 0)
+    for (int i = 0; i < n; i++)
     {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length();
+        start_pos = str.find(from, start_pos);
+        if (start_pos != std::string::npos)
+        {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length();
+        }
+        else
+            return str;
     }
 
     return str;
+}
+
+inline std::string toHexString(int i)
+{
+    std::stringstream ss;
+    ss << std::hex << i;
+    return ss.str();
 }
 
 inline path checkAndCreateDir(std::string dir)
@@ -116,8 +169,13 @@ inline void putStringFileContents(std::string file, std::string content)
 
 inline std::vector<char> get_rand_bytes(int size)
 {
+    auto randchar = []() -> char
+    {
+        return 'a' + rand() % 26;
+    };
+    
     std::vector<char> ret(size);
-    std::fill(ret.begin(), ret.end(), (97 + rand() % 26));
+    std::generate(ret.begin(), ret.end(), randchar);
 
     return ret;
 }

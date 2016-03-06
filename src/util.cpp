@@ -1,4 +1,3 @@
-#include <iostream>
 #include "util.h"
 
 std::map<std::string, std::string> parseAdditional(std::string additional)
