@@ -11,7 +11,12 @@
 class HTTPParser
 {
 public:
-    HTTPParser();
+    enum Mode {
+        Request,
+        Response
+    };
+
+    HTTPParser(Mode mode);
     ~HTTPParser();
 
     enum Status {
@@ -20,22 +25,19 @@ public:
         GotRequest = 1
     };
 
-    Status parseRequest(const char *data, std::size_t length);
-    Status parseResponse(const char *data, std::size_t length);
-
-    std::shared_ptr<HTTPRequest> getRequest();
-    std::shared_ptr<HTTPResponse> getResponse();
-
-private:
-    http_parser *parser;
-    http_parser_settings parser_settings;
+    Status parseChunk(const char *data, std::size_t length);
 
     std::shared_ptr<HTTPRequest> req;
     std::shared_ptr<HTTPResponse> res;
+
     bool done = false;
     bool was_reading_header_value = false;
     std::string tmp_header_field;
     std::string tmp_header_value;
+
+private:
+    http_parser *parser;
+    http_parser_settings parser_settings;
 };
 
 #endif //HATH_HTTPPARSER_H
