@@ -2,9 +2,10 @@
 #define HATH_CACHE_H
 
 #include <string>
-#include <boost/filesystem/path.hpp>
 
+#include "boost/filesystem/path.hpp"
 #include "SQLiteCpp/SQLiteCpp.h"
+
 #include "File.h"
 
 class Cache
@@ -14,16 +15,28 @@ public:
     ~Cache();
 
     void terminateDatabase();
-    void initializeCacheHandler();
-    void addFileToActiveCache(File);
+    void initializeCache();
+    void addFileToActiveCache(std::shared_ptr<File> file);
+    void pruneOldFiles();
+    void processBlacklist(long deltatime, bool noServerDeleteNotify);
+    void deleteFileFromCache(std::shared_ptr<File> toRemove);
+    int getSegmentCount();
+    int getStartupCachedFilesStrlen();
+    void calculateStartupCachedFilesStrlen();
+    std::vector<std::string> getCachedFilesSegment(std::string segment);
 
     static boost::filesystem::path getCacheDir();
+    static boost::filesystem::path getTmpDir();
+
+    int getCacheCount();
 
 private:
     static boost::filesystem::path cachedir;
     static boost::filesystem::path tmpdir;
 
-    int cacheCount;
+    bool quickStart = false;
+
+    int cacheCount, startupCachedFileStrlen;
     long cacheSize;
 
     SQLite::Database sqlite;
@@ -41,6 +54,8 @@ private:
     bool initializeDatabase();
     void resetFutureLasthits();
     void populateInternalCacheTable();
+    void deleteFileFromCacheNosync(std::shared_ptr<File> toRemove);
+    bool checkAndFreeDiskSpace(std::string file, bool noServerDeleteNotify);
 };
 
 #endif //HATH_CACHE_H
