@@ -109,11 +109,13 @@ void HathClient::shutdown(std::string s)
         serverAPI->notifyShutdown();
 
     if (cache != nullptr)
+    {
         //cache->flushRecentlyAccessed();
         cache->terminateDatabase();
+    }
 
     std::vector<std::string> sd = {"I don't hate you", "Whyyyyyyyy...", "No hard feelings", "Your business is appreciated", "Good-night"};
-    Out::info(sd[5]);
+    Out::info(sd[4]);
 
     Out::disableLogging();
 
