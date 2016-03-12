@@ -22,7 +22,7 @@ public:
 
     std::string method;
     URL url;
-    std::map<std::string, std::string, ci_less> headers;
+    header_map headers;
     std::vector<char> body;
 
     bool upgrade;

@@ -144,8 +144,8 @@ std::vector<char> HTTPResponse::toHTTP()
     ss << "Date: " << http_date() << "\r\n";
 
     // Headers
-    for(auto it = headers.begin(); it != headers.end(); it++)
-        ss << it->first << ": " << it->second << "\r\n";
+    for(auto &it : headers)
+        ss << it.first << ": " << it.second << "\r\n";
 
     // A blank line terminates the header section
     ss << "\r\n";

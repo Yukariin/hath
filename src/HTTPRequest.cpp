@@ -24,7 +24,7 @@ std::vector<char> HTTPRequest::toHTTP()
     ss << "Host: " << url.host << "\r\n";
 
     // Headers
-    for(auto it : headers)
+    for(auto &it : headers)
         ss << it.first << ": " << it.second << "\r\n";
 
     // A blank line terminates the header section
