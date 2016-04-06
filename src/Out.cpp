@@ -46,7 +46,7 @@ void Out::flushLogs()
     logout.flush();
 }
 
-std::ofstream Out::startLogger(std::string logfile)
+std::ofstream Out::startLogger(const std::string &logfile)
 {
     if (logfile.size())
     {
@@ -68,27 +68,27 @@ bool Out::stopLogger(std::ofstream &logfile)
     return true;
 }
 
-void Out::debug(std::string x)
+void Out::debug(const std::string &s)
 {
-    print(x, "debug", DEBUG);
+    print(s, "debug", DEBUG);
 }
 
-void Out::info(std::string x)
+void Out::info(const std::string &s)
 {
-    print(x, "info", INFO);
+    print(s, "info", INFO);
 }
 
-void Out::warning(std::string x)
+void Out::warning(const std::string &s)
 {
-    print(x, "WARN", WARNING);
+    print(s, "WARN", WARNING);
 }
 
-void Out::error(std::string x)
+void Out::error(const std::string &s)
 {
-    print(x, "ERROR", ERROR);
+    print(s, "ERROR", ERROR);
 }
 
-void Out::log(std::string data, int severity)
+void Out::log(const std::string &data, int severity)
 {
     static std::mutex m;
     std::lock_guard<std::mutex> lock(m);
@@ -124,7 +124,7 @@ void Out::log(std::string data, int severity)
     }
 }
 
-void Out::log(std::string data, std::ofstream &writer, bool flush)
+void Out::log(const std::string &data, std::ofstream &writer, bool flush)
 {
     if (writer.is_open())
     {
@@ -135,7 +135,7 @@ void Out::log(std::string data, std::ofstream &writer, bool flush)
     }
 }
 
-void Out::print(std::string x, std::string name, int severity)
+void Out::print(const std::string &s, const std::string &prefix, int severity)
 {
     std::string nowtime = out_time();
     bool output = (severity & OUTPUT) > 0;
@@ -146,13 +146,13 @@ void Out::print(std::string x, std::string name, int severity)
         static std::mutex m;
         std::lock_guard<std::mutex> lock(m);
         
-        auto spl = split(x, '\n');
-        for (std::string s : spl)
+        auto spl = split(s, '\n');
+        for (std::string &str : spl)
         {
             std::ostringstream data;
             data << nowtime
-            << " [" << name << "] "
-            << s;
+            << " [" << prefix << "] "
+            << str;
 
             if (output)
                 std::cout << data.str() << std::endl;

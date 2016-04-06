@@ -22,22 +22,22 @@ public:
     static void disableLogging();
     static void flushLogs();
 
-    static void debug(std::string x);
-    static void info(std::string x);
-    static void warning(std::string x);
-    static void error(std::string x);
+    static void debug(const std::string &s);
+    static void info(const std::string &s);
+    static void warning(const std::string &s);
+    static void error(const std::string &s);
 
 private:
     static bool writeLogs;
     static std::ofstream logout, logerr;
     static int logout_count, logerr_count;
 
-    static std::ofstream startLogger(std::string logfile);
+    static std::ofstream startLogger(const std::string &logfile);
     static bool stopLogger(std::ofstream &logfile);
 
-    static void log(std::string data, int severity);
-    static void log(std::string data, std::ofstream &writer, bool flush);
-    static void print(std::string x, std::string name, int severity);
+    static void log(const std::string &data, int severity);
+    static void log(const std::string &data, std::ofstream &writer, bool flush);
+    static void print(const std::string &s, const std::string &prefix, int severity);
 };
 
 #endif //HATH_OUT_H
