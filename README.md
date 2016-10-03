@@ -1,2 +1,2 @@
 # hath
-Hentai@Home C++ client
+Hentai@Home C++ (11) native client.
